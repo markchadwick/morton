@@ -1,6 +1,7 @@
 package morton
 
 import (
+	"strconv"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -12,44 +13,47 @@ func Test(t *testing.T) {
 	RunSpecs(t, "Morton Suite")
 }
 
-var _ = Describe("Encoding bytes", func() {
+var _ = Describe("Encoding", func() {
 
-	Context("when expanding 8 to 16 bits", func() {
+	Context("8 bits", func() {
 
-		It("should encode the low bit in the last position", func() {
-			enc := enc8To16(0xff)
-			Expect(enc & 0x1).To(Equal(uint16(0x01)))
+		It("should encode two ints", func() {
+			var a uint8 = 0xff // 1111 1111
+			var b uint8 = 0x00 // 0000 0000
+
+			enc := Enc8(a, b) // 1010 1010 1010 1010
+			Expect(enc).To(Equal(uint16(0xAAAA)))
 		})
 
-		It("should interleave bits", func() {
-			enc := enc8To16(0xff)
-			Expect(enc).To(Equal(uint16(0x5555)))
+		It("should decode two ints", func() {
+			x, y := Dec8(0x5e0b)             // 0101 1110 0000 1011
+			Expect(x).To(Equal(uint8(0x33))) // 0011 0011
+			Expect(y).To(Equal(uint8(0xe1))) // 1110 0001
 		})
 
-		It("should interleave bytes", func() {
-			a := 0xff // 1111 1111
-			b := 0x00 // 0000 0000
+	})
+
+	Context("16 bits", func() {
+
+		It("should encode to ints", func() {
+			var a uint16 = 0xabcd // 1010 1011 1100 1101
+			var b uint16 = 0xef01 // 1110 1111 0000 0001
+
+			// Expect 1101 1100 1101 1111 1010 0000 1010 0011
+			enc := Enc16(a, b)
+			Expect(enc).To(Equal(uint32(0xDCDFA0A3)))
 		})
 
-		It("should interleave two bytes", func() {
-			a := 0x33 // 00110011
-			b := 0xe1 // 11100001
+		It("should decode two ints", func() {
+			x, y := Dec16(0xDCDFA0A3)
+			Expect(x).To(Equal(uint16(0xabcd)))
+			Expect(y).To(Equal(uint16(0xef01)))
 		})
+
 	})
 
 })
 
-// var _ = Describe("Encoding 2 bytes to 16 bits", func() {
-//
-// 	It("should encode a high X", func() {
-// 		enc := Enc2To16(0xff, 0x00)
-// 		log.Printf("Encoded: %08x", enc)
-// 		Expect(enc).To(Equal(0xaaaa))
-// 	})
-//
-// 	// It("should encode a high Y", func() {
-// 	// 	enc := Enc2To16(0x00, 0xff)
-// 	// 	Expect(enc).To(Equal(0x5555))
-// 	// })
-//
-// })
+func binStr(i uint64) string {
+	return strconv.FormatUint(i, 2)
+}
