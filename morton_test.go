@@ -2,6 +2,7 @@ package morton
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 
 	. "github.com/onsi/ginkgo"
@@ -35,7 +36,7 @@ var _ = Describe("Encoding", func() {
 
 	Context("16 bits", func() {
 
-		It("should encode to ints", func() {
+		It("should encode two ints", func() {
 			var a uint16 = 0xabcd // 1010 1011 1100 1101
 			var b uint16 = 0xef01 // 1110 1111 0000 0001
 
@@ -52,8 +53,27 @@ var _ = Describe("Encoding", func() {
 
 	})
 
+	Context("32 bits", func() {
+
+		It("should encode two ints", func() {
+			var a uint32 = 0x01234567
+			var b uint32 = 0x89abcdef
+
+			enc := Enc32(a, b)
+			Expect(enc).To(Equal(uint64(0x40434C4F70737C7F)))
+		})
+
+		It("should decode two ints", func() {
+			x, y := Dec32(0x40434C4F70737C7F)
+			Expect(x).To(Equal(uint32(0x01234567)))
+			Expect(y).To(Equal(uint32(0x89abcdef)))
+		})
+
+	})
+
 })
 
-func binStr(i uint64) string {
-	return strconv.FormatUint(i, 2)
+func binStr(i uint64, bits int) string {
+	s := strconv.FormatUint(i, 2)
+	return strings.Repeat("0", bits-len(s)) + s
 }

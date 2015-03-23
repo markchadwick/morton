@@ -1,12 +1,3 @@
-# Morton
-Efficient encoding and decoding of [Z-Order
-Curves](http://en.wikipedia.org/wiki/Z-order_curve) to and from a euclidean
-grid. God, that sounds pompous as shit. You probably know if you needed this
-thing. It's in Go.
-
-
-## Example
-```go
 package main
 
 import (
@@ -33,12 +24,3 @@ func main() {
 	log.Printf("x1:   %d", x1)
 	log.Printf("y1:   %d", y1)
 }
-```
-
-```
-x0:   1298498081
-y0:   2019727887
-addr: 3882731965896198231
-x1:   1298498081
-y1:   2019727887
-```

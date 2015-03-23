@@ -49,6 +49,17 @@ var _ = Describe("Integer Striping", func() {
 	})
 
 	Context("32 bits", func() {
+
+		It("should stripe an int", func() {
+			out := stripe32(0xffffffff)
+			Expect(out).To(Equal(uint64(0x5555555555555555)))
+		})
+
+		It("should unstripe an int", func() {
+			dec := unstripe32(0x5555555555555555)
+			Expect(dec).To(Equal(uint32(0xffffffff)))
+		})
+
 	})
 
 })
